@@ -1,4 +1,6 @@
 #include <iostream>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -21,6 +23,10 @@ void test01();
 
 // test02
 void test02();
+
+// test03
+void test03();
+
 typedef enum days{SUN, MON, TUE, WED, THU, FRI, SAT} days;
 inline days operator++ (days &d){
     return d = static_cast<days>((static_cast<int>(d) + 1) % 7);
@@ -62,6 +68,8 @@ int main (int argc, char** argv){
         test01(); break;
     case 2: // enum operations overloading
         test02(); break;
+    case 3: // enum operations overloading
+        test03(); break;
 
     default:
         break;
@@ -89,4 +97,24 @@ void test02(){
     days d = MON, e;
     e = ++d;
     cout << d << '\t' << e << endl;
+}
+
+void test03(){ // test on vector of pairs
+
+    vector<pair<int, float>> closedSet;
+    int nodeIdx = 7;
+
+    closedSet.push_back(make_pair(5, 3.0));
+    closedSet.push_back(make_pair(6, 5.0));
+    closedSet.push_back(make_pair(7, 11.0));
+    closedSet.push_back(make_pair(8, 8.0));
+    closedSet.push_back(make_pair(9, 4.0));
+
+    vector<pair<int, float>>::iterator it  = find_if( closedSet.begin(), closedSet.end(), 
+                [&nodeIdx](const pair<int, float>& element){ return nodeIdx == element.first;} );
+
+    cout << "number " << nodeIdx << " can be found in the vector position " << it - closedSet.begin() << endl;
+    cout << "the size of the vector is: " << closedSet.end() - closedSet.begin() << "-using closedSet.end() - closedSet.begin()" << endl;
+    cout << "the size of the vector is: " << closedSet.size()                    << "-using .size()" << endl;
+    cout << "so if the index in the first line is >= " << closedSet.end() - closedSet.begin() << " it means nothing was found !" << endl;
 }

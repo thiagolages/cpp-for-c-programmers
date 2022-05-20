@@ -1,0 +1,13 @@
+Notes:
+
+basic format of a Makefile:
+
+target: dependencies
+    command
+
+Variables:
+
+$@ - reference to the target.
+$< - reference to the first prerequisite
+$^ - reference to all the prerequisites of the rule, including the names of the directories in which they were found
+
