@@ -12,6 +12,7 @@ class DijkstraAlgorithm{
 
     public:
         DijkstraAlgorithm(Graph *graph);
+        ~DijkstraAlgorithm();
         int compute(int startIdx, int endIdx);
 
     private:

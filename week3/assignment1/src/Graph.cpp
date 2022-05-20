@@ -1,21 +1,24 @@
 #include "Graph.hpp"
 
-Graph::Graph(): size(10), prob(0.2){createGraph(); } // Default constructor
+Graph::Graph(): size(10), prob(0.2){createGraph(); cout << "Graph(): Graph object created !"<<endl;} // Default constructor
 
-Graph::Graph(int size, float prob): size(size), prob(prob){createGraph();}
+Graph::Graph(int size, float prob): size(size), prob(prob){createGraph(); cout << "Graph(): Graph object created !"<<endl;}
 
-Graph::~Graph(){
+Graph::~Graph(){    
     // both matrix[i] and matrix[] are arrays, so we should use delete[] for both
     for (int i = 0; i < size; i++){
         delete[] this->matrix[i];
     }
     delete[] this->matrix;
+
+    cout << "~Graph(): Graph object destroyed !"<<endl;
 }
 
 int Graph::getSize(){return this->size;}
 
 void Graph::print(){ 
 
+    cout << endl;
     cout << "Matrix Representation: " << endl << endl;
     cout << "  X | ";
     for (int i=0; i < this->size; i++){cout << i << ".0 | ";}
@@ -45,8 +48,8 @@ void Graph::print(){
 }
 
 void Graph::createGraph(){
-    cout << setprecision (1) << fixed;
-    cout << "Creating graph.." << endl;
+
+    cout << setprecision (1) << fixed; // set fixed precision for all outputs to come
     srand(time(0)); // seeding the pseudo-random generator
     
     // Allocating memory for the graph matrix
@@ -81,6 +84,5 @@ void Graph::createGraph(){
             }
         }
     }
-    cout << "Done creating graph !" << endl;
 }
 

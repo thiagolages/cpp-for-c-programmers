@@ -1,7 +1,9 @@
 #include "Graph.hpp"
 #include "DijkstraAlgorithm.hpp"
 
-DijkstraAlgorithm::DijkstraAlgorithm(Graph *graph): graph(graph){}
+DijkstraAlgorithm::DijkstraAlgorithm(Graph *graph): graph(graph){cout << "DijkstraAlgorithm(): DijkstraAlgorithm object created !"<<endl;}
+
+DijkstraAlgorithm::~DijkstraAlgorithm(){cout << "~DijkstraAlgorithm(): DijkstraAlgorithm object destroyed !"<<endl;}
 
 int DijkstraAlgorithm::compute(int startIdx, int endIdx){
     
