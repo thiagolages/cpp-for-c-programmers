@@ -1,1 +1,5 @@
 .vscode/
+week*/*.o
+week*/assignment*/*.o
+week*/bin
+week*/*/bin

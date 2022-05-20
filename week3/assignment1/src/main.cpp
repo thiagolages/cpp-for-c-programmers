@@ -16,6 +16,7 @@ int main (int argc, char** argv){
     int result                      = 0; // used to check for errors in the algorithm return
 
     graph->print();
+    
 
     return 0; //temporary
 
