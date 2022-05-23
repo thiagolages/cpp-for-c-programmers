@@ -45,7 +45,7 @@ Graph::Graph(bool test){
     this->list.at(5).insert(list.at(5).end(), {make_pair(2, 2.0), make_pair(3, 9.0), make_pair(4, 3.0)});                       // F
     
     
-    cout << "Graph(): Graph object created !"<<endl;
+    // cout << "Graph(): Graph object created !"<<endl;
 }
 
 Graph::~Graph(){    

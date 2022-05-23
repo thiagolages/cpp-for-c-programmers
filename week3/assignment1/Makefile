@@ -1,9 +1,12 @@
 
 SRC = src
+TEST = test
 SOURCES=$(SRC)/main.cpp $(SRC)/Graph.cpp $(SRC)/DijkstraAlgorithm.cpp
+LIBS = /usr/local/lib/libgtest_main.a -lgtest
 INC = include/
 BUILD = bin
 OUT = $(BUILD)/dijkstraalgorithm
+OUT_TEST = $(BUILD)/test_dijkstraalgorithm
 
 # Points to the root of Google Test, relative to where this file is.
 # Remember to tweak this if you move this file.
@@ -20,21 +23,27 @@ GTEST_HEADERS = $(GTEST_DIR)/*.h \
 CPPFLAGS += -isystem $(GTEST_DIR)/include
 
 # Flags passed to the C++ compiler.
-CXXFLAGS += -g -Wall -Wextra -pthread
+CXXFLAGS += -g -Werror -Wextra -pthread # -Wall can be used instead of -Werror
 
 GTEST_LIB = gtest_main.a
 
-all: main.o Graph.o DijkstraAlgorithm.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) main.o Graph.o DijkstraAlgorithm.o -o $(OUT) -lgtest
+all: main tests
 
-main.o: $(SRC)/main.cpp $(GTEST_HEADERS)
-	$(CXX) -c $(SRC)/main.cpp -I$(INC)
+main: $(SRC)/main.cpp Graph.o DijkstraAlgorithm.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(SRC)/main.cpp Graph.o DijkstraAlgorithm.o -I$(INC) -o $(OUT) $(LIBS)
 
 Graph.o: $(SRC)/Graph.cpp $(INC)/Graph.hpp
 	$(CXX) -c $(SRC)/Graph.cpp -I$(INC)
 
 DijkstraAlgorithm.o: $(SRC)/DijkstraAlgorithm.cpp $(INC)/DijkstraAlgorithm.hpp
 	$(CXX) -c $(SRC)/DijkstraAlgorithm.cpp -I$(INC)
+
+# TESTS
+tests: GraphTest.o Graph.o DijkstraAlgorithm.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) GraphTest.o Graph.o DijkstraAlgorithm.o -o $(OUT_TEST) -I$(INC) $(LIBS) -I$(GTEST_HEADERS)
+
+GraphTest.o: $(TEST)/GraphTest.cpp Graph.o
+	$(CXX) -c $(TEST)/GraphTest.cpp -I$(INC)
 
 clean:
 	rm *.o
