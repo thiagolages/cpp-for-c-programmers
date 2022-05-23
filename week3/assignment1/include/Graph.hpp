@@ -20,8 +20,9 @@ class Graph {
         float prob;                             // probability of existing an edge between two nodes
 
     public:
-        Graph(); // Default constructor
-        Graph(int size, float prob);
+        Graph(); // Default constructor. Uses a default size and prob
+        Graph(int size, float prob); // User defined size and prob
+        Graph(bool test); // Constructor used for testing
         ~Graph();
 
         int getSize();
@@ -29,6 +30,8 @@ class Graph {
 
     private:
         void createGraph();
+        void allocateMatrix();
+        void allocateList();
 };
 
 #endif

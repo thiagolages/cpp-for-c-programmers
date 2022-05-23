@@ -5,8 +5,28 @@ DijkstraAlgorithm::DijkstraAlgorithm(Graph *graph): graph(graph){cout << "Dijkst
 
 DijkstraAlgorithm::~DijkstraAlgorithm(){cout << "~DijkstraAlgorithm(): DijkstraAlgorithm object destroyed !"<<endl;}
 
+ostream& operator<< (ostream& out, const vector<pair<int, float>>& vec){
+    for (int i = 0; i < vec.size(); i++){
+        out << "(" << vec.at(i).first << "," << vec.at(i).second << "),";
+    }
+    out << endl;
+    return out;
+}
+
+void  DijkstraAlgorithm::setShortestPath(float shortestPath){this->shortestPath = shortestPath;}
+float DijkstraAlgorithm::getShortestPath(){return this->shortestPath;}
+
 int DijkstraAlgorithm::compute(int startIdx, int endIdx){
     
+    if (startIdx == endIdx){
+        cout << "Initital and Final nodes are the same." << endl;
+        return 0; //all OK
+    }
+
+    int nodeIdx     = 0;    // current node index
+    float weight    = 0.0;  // auxiliary to get weights
+    float currSum   = 0.0;  // current sum of weights
+
     // Step 0) Check if we don't have a graph with 1 or less nodes
     if (graph->getSize() <= 1){
         cout << "Graph should have size > 1 !" << endl;
@@ -15,65 +35,74 @@ int DijkstraAlgorithm::compute(int startIdx, int endIdx){
         return -1;
     }
 
-    int nodeIdx     = 0;    // current node index
-    float weight    = 0.0;  // auxiliary to get weights
-    float currSum   = 0.0;  // current sum of weights
-
     // Step 1) Add the initial graph node to the closed set, and its distance to the start node (which is itself, so it's zero.)
     closedSet.push_back(make_pair(nodeIdx, currSum));
 
-    // Step 2) Add to the openSet all the nodes it connects to
+    // Step 2) Add to the openSet all the nodes it connects to (since this is the first node and openSet is empty)
     //  First we have to fill the openSet with the elements
+    if(graph->list.at(nodeIdx).size() == 0){
+        cerr << "Node "<<nodeIdx<< " is not connected to any nodes, so this is not a connected graph." << endl;
+        return -1;
+    }
+
     for (int i = 0; i < graph->list.at(nodeIdx).size(); i++){
-        cout << "i = "<<i<<endl;
         openSet.push_back(graph->list.at(nodeIdx).at(i)); 
     }
+
+    cout << "openSet = " << openSet;
 
     // Step 2.5) We have to sort our openSet based on weights so we pick the minimum distance
     sort(openSet.begin(), openSet.end(), this->sortByWeight);
 
-    return 0; // temporary
+    cout << "openSet after sort by weight (second index) = " << openSet;
 
-    // while(openSet.size() != 0){
+    while(openSet.size() != 0){
 
-    //     // get the first element on the openSet and put it in the closedSet
-    //     nodeIdx = openSet.front().first;            // update the node index, which is the node with shortest distance
-    //     weight  = openSet.front().second + currSum; // getting the current cost to get to the new node
+        // get the first element on the openSet and put it in the closedSet
+        nodeIdx = openSet.front().first;            // update the node index, which is the node with shortest distance
+        weight  = openSet.front().second + currSum; // getting the current cost to get to the new node
 
-    //     // Step 3) Check a few conditions:
+        // if we found the last node 
+        if (nodeIdx == endIdx){ 
+            currSum += weight;
+            setShortestPath(currSum); // assigning to the shortestPath variable
+            return 0; // all OK
+        }
+
+        // // Step 3) Check a few conditions:
         
-    //     // 3.1) Checks if the node index is found within the closedSet
-    //     // 'it' returns 'closedSet.end()' if nothing is found
-    //     auto it = find_if( closedSet.begin(), closedSet.end(), 
-    //     [&nodeIdx](const pair<int, float>& element){ return nodeIdx == element.first;} );
+        // // 3.1) Checks if the node index is found within the closedSet
+        // // 'it' returns 'closedSet.end()' if nothing is found
+        // auto it = find_if( closedSet.begin(), closedSet.end(), 
+        // [&nodeIdx](const pair<int, float>& element){ return nodeIdx == element.first;} );
         
-    //     // determine the index of the 'closedSet' vector in which the new node was found.
-    //     // if this index is out of range of the vector size, means we haven't found anything
-    //     int pos = it - closedSet.begin(); 
+        // // determine the index of the 'closedSet' vector in which the new node was found.
+        // // if this index is out of range of the vector size, means we haven't found anything
+        // int pos = it - closedSet.begin(); 
         
-    //     if ( pos < closedSet.size()){ // if it is found, just skip to the next iteration
+        // if ( pos < closedSet.size()){ // if it is found, just skip to the next iteration
             
-    //         continue;
-    //     }
+        //     continue;
+        // }
 
-    //     // 3.2) Checks if the node index is found within the openSet
-    //     it = find_if( openSet.begin(), openSet.end(), 
-    //     [&nodeIdx](const pair<int, float>& element){ return nodeIdx == element.first;} );
+        // // 3.2) Checks if the node index is found within the openSet
+        // it = find_if( openSet.begin(), openSet.end(), 
+        // [&nodeIdx](const pair<int, float>& element){ return nodeIdx == element.first;} );
 
-    //     int aux = it - openSet.begin(); // determine if the element was found or not
-    //     if ( aux < openSet.size()){ // if it is found, check if we can make any improvements on the minimum distance
+        // int aux = it - openSet.begin(); // determine if the element was found or not
+        // if ( aux < openSet.size()){ // if it is found, check if we can make any improvements on the minimum distance
             
-    //     }
+        // }
 
 
-    //     closedSet.push_back(make_pair(nodeIdx, weight));
-    //     // remove it from the openSet
-    //     openSet.clear(openSet.front());
+        // closedSet.push_back(make_pair(nodeIdx, weight));
+        // // remove it from the openSet
+        // openSet.clear(openSet.front());
 
         
-    //     getEdges(nodeIdx, currSum);
+        // getEdges(nodeIdx, currSum);
 
-    // }
+    }
     
 
 

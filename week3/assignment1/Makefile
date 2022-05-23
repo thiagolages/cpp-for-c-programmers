@@ -1,22 +1,68 @@
 
 SRC = src
 SOURCES=$(SRC)/main.cpp $(SRC)/Graph.cpp $(SRC)/DijkstraAlgorithm.cpp
-FLAGS= -g -Werror
 INC = include/
 BUILD = bin
 OUT = $(BUILD)/dijkstraalgorithm
 
-all: main.o Graph.o DijkstraAlgorithm.o
-	g++ $(FLAGS) main.o Graph.o DijkstraAlgorithm.o -o $(OUT)
+# Points to the root of Google Test, relative to where this file is.
+# Remember to tweak this if you move this file.
+GTEST_DIR = /usr/local/include/gtest
 
-main.o: $(SRC)/main.cpp
-	g++ -c $(SRC)/main.cpp -I$(INC)
+# All Google Test headers.  Usually you shouldn't change this
+# definition.
+GTEST_HEADERS = $(GTEST_DIR)/*.h \
+                $(GTEST_DIR)/internal/*.h
+
+# Flags passed to the preprocessor.
+# Set Google Test's header directory as a system directory, such that
+# the compiler doesn't generate warnings in Google Test headers.
+CPPFLAGS += -isystem $(GTEST_DIR)/include
+
+# Flags passed to the C++ compiler.
+CXXFLAGS += -g -Wall -Wextra -pthread
+
+GTEST_LIB = gtest_main.a
+
+all: main.o Graph.o DijkstraAlgorithm.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) main.o Graph.o DijkstraAlgorithm.o -o $(OUT) -lgtest
+
+main.o: $(SRC)/main.cpp $(GTEST_HEADERS)
+	$(CXX) -c $(SRC)/main.cpp -I$(INC)
 
 Graph.o: $(SRC)/Graph.cpp $(INC)/Graph.hpp
-	g++ -c $(SRC)/Graph.cpp -I$(INC)
+	$(CXX) -c $(SRC)/Graph.cpp -I$(INC)
 
 DijkstraAlgorithm.o: $(SRC)/DijkstraAlgorithm.cpp $(INC)/DijkstraAlgorithm.hpp
-	g++ -c $(SRC)/DijkstraAlgorithm.cpp -I$(INC)
+	$(CXX) -c $(SRC)/DijkstraAlgorithm.cpp -I$(INC)
 
 clean:
 	rm *.o
+
+# Builds gtest.a and gtest_main.a.
+
+# Usually you shouldn't tweak such internal variables, indicated by a
+# trailing _.
+GTEST_SRCS_ = $(GTEST_DIR)/src/*.cc $(GTEST_DIR)/src/*.h $(GTEST_HEADERS)
+
+# For simplicity and to avoid depending on Google Test's
+# implementation details, the dependencies specified below are
+# conservative and not optimized.  This is fine as Google Test
+# compiles fast and for ordinary users its source rarely changes.
+gtest-all.o : $(GTEST_SRCS_)
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
+            $(GTEST_DIR)/src/gtest-all.cc
+
+gtest_main.o : $(GTEST_SRCS_)
+	$(CXX) $(CPPFLAGS) -I$(GTEST_DIR) $(CXXFLAGS) -c \
+            $(GTEST_DIR)/src/gtest_main.cc
+
+gtest.a : gtest-all.o
+	$(AR) $(ARFLAGS) $@ $^
+
+gtest_main.a : gtest-all.o gtest_main.o
+	$(AR) $(ARFLAGS) $@ $^
+
+# Builds a sample test.  A test should link with either gtest.a or
+# gtest_main.a, depending on whether it defines its own main()
+# function.
