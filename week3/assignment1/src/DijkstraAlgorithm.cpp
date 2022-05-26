@@ -1,187 +1,189 @@
 #include "Graph.hpp"
 #include "DijkstraAlgorithm.hpp"
 
-DijkstraAlgorithm::DijkstraAlgorithm(Graph *graph): graph(graph){cout << "DijkstraAlgorithm(): DijkstraAlgorithm object created !"<<endl;}
+DijkstraAlgorithm::DijkstraAlgorithm(Graph *graph, int startIdx=0, int endIdx=1): graph(graph), startIdx(startIdx), endIdx(endIdx){
+    
+    MST.reserve(graph->getSize());
 
-DijkstraAlgorithm::~DijkstraAlgorithm(){cout << "~DijkstraAlgorithm(): DijkstraAlgorithm object destroyed !"<<endl;}
+    for (int i = 0; i < graph->getSize(); i++){
+        MST.push_back(MSTNode());
+    }
+    // cout << "DijkstraAlgorithm(): DijkstraAlgorithm object created !"<<endl;
+}
 
-ostream& operator<< (ostream& out, const vector<pair<int, float>>& vec){
+DijkstraAlgorithm::~DijkstraAlgorithm(){
+    // cout << "~DijkstraAlgorithm(): DijkstraAlgorithm object destroyed !"<<endl;
+}
+
+ostream& operator<< (ostream& out, const vector<GraphNode>& vec){
     for (int i = 0; i < vec.size(); i++){
-        out << "(" << vec.at(i).first << "," << vec.at(i).second << "),";
+        out << "(" << vec.at(i).index << "," << vec.at(i).distFromPrevNode << "),";
     }
     out << endl;
     return out;
 }
 
+ostream& operator<< (ostream& out, const vector<MSTNode>& MST){
+    out << endl;
+    for (int i = 0; i < MST.size(); i++){
+        out << "(" << MST.at(i).previousNodeIdx << "," << MST.at(i).distFromSrcNode << ")" << endl;
+    }
+    return out;
+}
+
+ostream& operator<< (ostream& out, const MSTNode& node){
+        out << "previousNodeIdx = " << node.previousNodeIdx << endl;
+        out << "distFromSrcNode = " << node.distFromSrcNode << endl;
+        out << "hasBeenVisited  = " << node.hasBeenVisited << endl;
+        return out;
+}
+
 void  DijkstraAlgorithm::setShortestPath(float shortestPath){this->shortestPath = shortestPath;}
+
 float DijkstraAlgorithm::getShortestPath(){return this->shortestPath;}
 
-int DijkstraAlgorithm::compute(int startIdx, int endIdx){
+void DijkstraAlgorithm::printShortestPath(){
     
+    int oldIdx = endIdx;
+    int newIdx = MST.at(endIdx).previousNodeIdx;
+    
+    cout << "shortest path from " << startIdx << " to " << endIdx << " = " << shortestPath << endl;
+    cout << endIdx << "<-" << newIdx;
+    while(newIdx!= startIdx){
+        oldIdx = newIdx;
+        newIdx = MST.at(oldIdx).previousNodeIdx;
+        cout << "<-" << newIdx;
+    }
+    cout << endl;
+
+}
+
+// void DijkstraAlgorithm::setStartIdx(int startIdx){this->startIdx = startIdx;};
+
+// void DijkstraAlgorithm::setEndIdx  (int endIdx  ){this->endIdx   = endIdx  ;};
+
+int  DijkstraAlgorithm::getStartIdx(){return this->startIdx;};
+
+int  DijkstraAlgorithm::getEndIdx  (){return this->endIdx  ;};
+
+Graph* DijkstraAlgorithm::getGraph(){return this->graph;}
+
+int DijkstraAlgorithm::compute(){
+
     if (startIdx == endIdx){
         cout << "Initital and Final nodes are the same." << endl;
         return 0; //all OK
     }
-
-    int nodeIdx     = 0;    // current node index
-    float weight    = 0.0;  // auxiliary to get weights
-    float currSum   = 0.0;  // current sum of weights
-
-    // Step 0) Check if we don't have a graph with 1 or less nodes
+    
+    // Step 0)
     if (graph->getSize() <= 1){
         cout << "Graph should have size > 1 !" << endl;
-        this->shortestPath = -1;
-        this->path.push_back(-1);
+        shortestPath = -1;
+        path.push_back(-1);
         return -1;
     }
 
+    int   currNodeIdx          = startIdx; // current node index
+    float currNodeDistFromPrev = 0.0;
+
     // Step 1) Add the initial graph node to the closed set, and its distance to the start node (which is itself, so it's zero.)
-    closedSet.push_back(make_pair(nodeIdx, currSum));
+    closedSet.push_back(GraphNode(startIdx, 0.0));
+    MST.at(startIdx)  = GraphNode(startIdx, 0.0);
 
     // Step 2) Add to the openSet all the nodes it connects to (since this is the first node and openSet is empty)
     //  First we have to fill the openSet with the elements
-    if(graph->list.at(nodeIdx).size() == 0){
-        cerr << "Node "<<nodeIdx<< " is not connected to any nodes, so this is not a connected graph." << endl;
+    if(graph->list.at(startIdx).size() == 0){
+        cerr << "Node "<<currNodeIdx<< " is not connected to any nodes, so this is not a connected graph." << endl;
         return -1;
     }
 
-    for (int i = 0; i < graph->list.at(nodeIdx).size(); i++){
-        openSet.push_back(graph->list.at(nodeIdx).at(i)); 
+
+    for (int i = 0; i < graph->list.at(startIdx).size(); i++){
+        int auxIdx      = graph->list.at(startIdx).at(i).first;
+        float auxWeight = graph->list.at(startIdx).at(i).second;
+        openSet.push_back(GraphNode(auxIdx, auxWeight)); // e.g. (1, 3) and (4, 4) for the test graph
+        MST.at(auxIdx) =  MSTNode(currNodeIdx, auxWeight);
     }
-
-    cout << "openSet = " << openSet;
-
-    // Step 2.5) We have to sort our openSet based on weights so we pick the minimum distance
-    sort(openSet.begin(), openSet.end(), this->sortByWeight);
-
-    cout << "openSet after sort by weight (second index) = " << openSet;
+    
+    cout << endl; 
+    cout << "startIdx = "<< startIdx << endl;
+    cout << "openSet = " << openSet << endl;
+    cout << "MST     = " << MST << endl;
+    cout << "openSet.size() = " << openSet.size() << endl;
 
     while(openSet.size() != 0){
 
-        // get the first element on the openSet and put it in the closedSet
-        nodeIdx = openSet.front().first;            // update the node index, which is the node with shortest distance
-        weight  = openSet.front().second + currSum; // getting the current cost to get to the new node
+        // Step 2.5) We have to sort our openSet based on weights so we pick the minimum distance
+        sort(openSet.begin(), openSet.end(), sortByDist);
+        cout << "openSet sorted = " << openSet << endl;
 
-        // if we found the last node 
-        if (nodeIdx == endIdx){ 
-            currSum += weight;
-            setShortestPath(currSum); // assigning to the shortestPath variable
-            return 0; // all OK
+        currNodeIdx          = openSet.front().index;
+        currNodeDistFromPrev = openSet.front().distFromPrevNode;
+
+        cout << "currNodeIdx = " << currNodeIdx << "  ";
+        cout << "currNodeDistFromPrev = " << currNodeDistFromPrev << endl;
+
+        // remove from openSet
+        openSet.erase(openSet.begin());
+
+        cout << "openSet.size() = " << openSet.size() << endl;
+        cout << "openSet = " << openSet << endl;
+
+        MST.at(currNodeIdx).hasBeenVisited = true;
+
+        // Step 3) Add all nodes this node connects to
+        for (auto& node: graph->list.at(currNodeIdx)){
+            cout << "inside for auto& node: graph->list.at("<<currNodeIdx<<")" << endl;
+            int newNodeIdx                  = node.first;
+            int distFromCurrNodeToNewNode   = node.second;
+            
+            cout << "newNodeIdx = " << newNodeIdx << endl;
+            cout << "distFromCurrNodeToNewNode = " << distFromCurrNodeToNewNode << endl;
+
+            float oldDistance = MST.at(newNodeIdx).distFromSrcNode; // current  assigned distance from  i to source node
+            float newDistance = MST.at(currNodeIdx).distFromSrcNode + distFromCurrNodeToNewNode; // new calculated distance - distance so far + distance from currNode to i
+
+            cout << "oldDistance = " << oldDistance << endl;
+            cout << "newDistance = " << newDistance << endl;
+
+            cout << "MST.at("<<newNodeIdx<<") = " << MST.at(newNodeIdx) <<endl;
+
+            if ( !MST.at(newNodeIdx).hasBeenVisited &&
+                  MST.at(currNodeIdx).distFromSrcNode != INFINITY &&
+                  newDistance < oldDistance){
+                    cout << "in" <<endl;
+                    
+                    MST.at(newNodeIdx).distFromSrcNode = newDistance;
+                    MST.at(newNodeIdx).hasBeenVisited  = true;
+                    MST.at(newNodeIdx).previousNodeIdx = currNodeIdx;
+
+                    cout << "MST.at("<<newNodeIdx<<") = " << MST.at(newNodeIdx) <<endl;
+
+                    for (auto& newNodeAdj: graph->list.at(newNodeIdx)){
+                        // adding only if node was not visited already
+                        if (!MST.at(newNodeAdj.first).hasBeenVisited){
+                            openSet.push_back(GraphNode(newNodeAdj.first,   newNodeAdj.second));
+                            cout << "adding node ("<<newNodeAdj.first<<","<<newNodeAdj.second<<") to openSet"<<endl;
+                        }
+                        
+                    }
+
+                    cout << "out" << endl;
+                }
         }
 
-        // // Step 3) Check a few conditions:
-        
-        // // 3.1) Checks if the node index is found within the closedSet
-        // // 'it' returns 'closedSet.end()' if nothing is found
-        // auto it = find_if( closedSet.begin(), closedSet.end(), 
-        // [&nodeIdx](const pair<int, float>& element){ return nodeIdx == element.first;} );
-        
-        // // determine the index of the 'closedSet' vector in which the new node was found.
-        // // if this index is out of range of the vector size, means we haven't found anything
-        // int pos = it - closedSet.begin(); 
-        
-        // if ( pos < closedSet.size()){ // if it is found, just skip to the next iteration
-            
-        //     continue;
-        // }
-
-        // // 3.2) Checks if the node index is found within the openSet
-        // it = find_if( openSet.begin(), openSet.end(), 
-        // [&nodeIdx](const pair<int, float>& element){ return nodeIdx == element.first;} );
-
-        // int aux = it - openSet.begin(); // determine if the element was found or not
-        // if ( aux < openSet.size()){ // if it is found, check if we can make any improvements on the minimum distance
-            
-        // }
-
-
-        // closedSet.push_back(make_pair(nodeIdx, weight));
-        // // remove it from the openSet
-        // openSet.clear(openSet.front());
-
-        
-        // getEdges(nodeIdx, currSum);
 
     }
-    
 
-
-    // // Step 1) While there are items in the openSet and we haven't moved our destination to the closedSet, we continue
-    // while(openSet.size() != 0){
-
-    //     // Step 2) Add the initial graph node to the closed set, and its distance to the start node (which is itself, so it's zero.)
-    //     closedSet.push_back(make_pair(nodeIdx, weight));
-
-    //     // Step 3) Add to the openSet all the nodes it connects to
-    //     //  First we have to fill the openSet with the elements
-    //     for (int i = 0; i < graph->list.at(nodeIdx).size(); i++){
-    //         openSet.push_back(graph->list.at(nodeIdx).at(i)); 
-    //     }
-
-    //     // Step 3.5) We have to sort our openSet based on weights so we pick the minimum distance
-    //     sort(openSet.begin(), openSet.end(), this->sortByWeight);
-
-    //     // get the first element on the openSet and put it in the closedSet
-    //     nodeIdx = openSet.front().first;            // update the node index, which is the node with shortest distance
-    //     weight  = openSet.front().second + currSum; // getting the current cost to get to the new node
-    //     closedSet.push_back(make_pair(nodeIdx, weight));
-    //     // remove it from the openSet
-    //     openSet.clear(openSet.front());
-
-        
-    //     getEdges(nodeIdx, currSum);
-
-
-    // } // end while
-                
+    float shortestPath = MST.at(endIdx).distFromSrcNode;
+    setShortestPath(shortestPath);
+    printShortestPath();
 
     return 0; // everything worked fine
 
 } // end of 'compute'
 
 // sort by second element (weight) in a vector<pair<int, float>>
-bool DijkstraAlgorithm::sortByWeight(const pair<int,float> &a, const pair<int,float> &b){
-    return (a.second < b.second);
+bool DijkstraAlgorithm::sortByDist(const GraphNode &a, const GraphNode &b){
+    return (a.distFromPrevNode < b.distFromPrevNode);
 }
-
-// void DijkstraAlgorithm::getEdges(int nodeIdx, float currSum){
-//     if (graph->list.at(nodeIdx).size() == 0){
-//         // nothing to do, 'set' keeps the same
-//         return;
-//     }
-//     // Step 4) We have to check if the item to be fetched is:
-//     // 4.1) already in the closed set
-//     // 4.2) already in the open set
-//     // 4.3) not in the open nor closed sets
-
-//     // Now we check some conditions
-//     for (int i = 0; i < graph->list.at(nodeIdx).size(); i++){
-        
-//         int adjNodeIdx      = openSet.front().first;
-//         int adjNodeWeight   = openSet.front().second;
-
-//         // 4.1) check if it's in the closed set. If it is, remove it from the openSet and go to the next iteration 
-//         for (int i = 0 ; i < openSet.size(); i++){
-            
-//             int nodeIdx     = openSet.at(i).first;
-//             float nodeWeight= openSet.at(i).second;
-
-//             if (count(closedSet.begin(), closedSet.end(), adjNodeIdx)){
-//                 openSet.erase(openSet.begin()); // erase it from the openSet
-//                 continue;
-//             }else
-//             // 4.2) check if it needs to be updated in the openSet
-//             if (count(openSet.begin(), openSet.end(), adjNodeIdx)){
-//                 openSet.erase(openSet.begin()); // erase it from the openSet
-//                 continue;
-//             }else // 4.3) not in the open nor closed set
-//             {
-//                 // was already added to the openSet so no need to do anything here
-//             }
-//         }
-        
-//     }
-
-        
-// }
-

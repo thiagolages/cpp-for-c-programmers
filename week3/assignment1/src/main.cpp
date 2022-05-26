@@ -13,33 +13,34 @@ int main (int argc, char** argv){
     // Step 1 - Graph creation
     int numNodes   = 10; // number of nodes in the graph
     float edgeProb = 0.5; // probability of having an edge between two nodes
-    
-    Graph *graph0                    = new Graph(numNodes, edgeProb);
+
+    Graph *graph0                   = new Graph(numNodes, edgeProb);
     Graph *graph                    = new Graph(true); // Test Graph
-    DijkstraAlgorithm *dijkstra     = new DijkstraAlgorithm(graph);
+
+     // indexes between 0 and graph->getSize() -1
+    // int startIdx= rand() % graph->getSize();
+    // int endIdx  = rand() % graph->getSize();
+    int startIdx= 1;
+    int endIdx  = 5;
+    
+
+    // just to make sure start and end indexes are different
+    while (endIdx == startIdx){
+        endIdx = rand() % graph->getSize();
+    }
+
+    DijkstraAlgorithm *dk           = new DijkstraAlgorithm(graph, startIdx, endIdx);
     int result                      = -1; // used to check for errors in the algorithm return
 
     graph->print();
 
-    // indexes between 0 and graph->getSize() -1
-    int startIdx    = rand() % graph->getSize();
-    int endIdx      = rand() % graph->getSize();
-
-    // just to make sure start and end indexes are different
-    while (endIdx == startIdx){
-         endIdx = rand() % graph->getSize();
-    }
-
-
-    
-
-    result = dijkstra->compute(startIdx, endIdx);
-    cout << "The shortest path found was "<< dijkstra->getShortestPath() << endl;
+    result = dk->compute();
+    dk->printShortestPath();
 
     cout << "----------------------------------" << endl;
 
-    delete graph;
-    delete dijkstra;
+    delete graph; delete graph0;
+    delete dk;
 
     if (result != 0){
         cout << "Wrong computation of Dijkstra's Algorithm ! " << endl;

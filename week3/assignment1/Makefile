@@ -39,11 +39,11 @@ DijkstraAlgorithm.o: $(SRC)/DijkstraAlgorithm.cpp $(INC)/DijkstraAlgorithm.hpp
 	$(CXX) -c $(SRC)/DijkstraAlgorithm.cpp -I$(INC)
 
 # TESTS
-tests: GraphTest.o Graph.o DijkstraAlgorithm.o
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) GraphTest.o Graph.o DijkstraAlgorithm.o -o $(OUT_TEST) -I$(INC) $(LIBS) -I$(GTEST_HEADERS)
+tests: UnitTest.o Graph.o DijkstraAlgorithm.o
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) UnitTest.o Graph.o DijkstraAlgorithm.o -o $(OUT_TEST) -I$(INC) $(LIBS) -I$(GTEST_HEADERS)
 
-GraphTest.o: $(TEST)/GraphTest.cpp Graph.o
-	$(CXX) -c $(TEST)/GraphTest.cpp -I$(INC)
+UnitTest.o: $(TEST)/UnitTest.cpp Graph.o
+	$(CXX) -c $(TEST)/UnitTest.cpp -I$(INC)
 
 clean:
 	rm *.o

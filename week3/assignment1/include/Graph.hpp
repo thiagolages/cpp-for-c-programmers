@@ -10,9 +10,21 @@
 
 using namespace std;
 
+typedef struct GraphNode{ 
+    int index;
+    float distFromPrevNode;
+    GraphNode(int index, float distFromPrevNode): index(index), distFromPrevNode(distFromPrevNode){}
+    GraphNode(const GraphNode& node): index(node.index), distFromPrevNode(node.distFromPrevNode){}
+    GraphNode& operator=(const GraphNode& node){
+        index           = node.index;
+        distFromPrevNode= node.distFromPrevNode;
+        return *this;
+    }
+}GraphNode;
+
 class Graph {
     public:
-        float** matrix;                           // representation of the graph in a matrix format
+        float** matrix;                   // representation of the graph in a matrix format
         vector<vector<pair<int, float>>> list;  // list representation of the graph. list of pairs, containing the node it connects to, and the weight of the edge
 
     private:

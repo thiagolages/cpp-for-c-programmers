@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <sstream>
 
 using namespace std;
 
@@ -18,14 +19,10 @@ void display(T x){
 //     cout << x;
 // }
 
-// test01
 void test01();
-
-// test02
 void test02();
-
-// test03
 void test03();
+void test04();
 
 typedef enum days{SUN, MON, TUE, WED, THU, FRI, SAT} days;
 inline days operator++ (days &d){
@@ -70,6 +67,8 @@ int main (int argc, char** argv){
         test02(); break;
     case 3: // enum operations overloading
         test03(); break;
+    case 4: // testing stringstream
+        test04(); break;
 
     default:
         break;
@@ -98,7 +97,6 @@ void test02(){
     e = ++d;
     cout << d << '\t' << e << endl;
 }
-
 void test03(){ // test on vector of pairs
 
     vector<pair<int, float>> closedSet;
@@ -117,4 +115,14 @@ void test03(){ // test on vector of pairs
     cout << "the size of the vector is: " << closedSet.end() - closedSet.begin() << "-using closedSet.end() - closedSet.begin()" << endl;
     cout << "the size of the vector is: " << closedSet.size()                    << "-using .size()" << endl;
     cout << "so if the index in the first line is >= " << closedSet.end() - closedSet.begin() << " it means nothing was found !" << endl;
+}
+void test04(){ // test stringstream
+    stringstream ss;
+    
+    ss << "teste01 ";
+    ss << "teste02 ";
+    ss << "teste03 ";
+    ss << "teste04 ";
+
+    cout << ss.str();
 }
