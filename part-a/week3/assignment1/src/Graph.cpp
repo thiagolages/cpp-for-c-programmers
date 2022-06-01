@@ -126,7 +126,7 @@ void Graph::createGraph(){
                 
                 // will create an integer between 1-9 for the edge weight, if the probability is met
 
-                if (rand()%10 < prob*10.0 && i <= j){
+                if (rand()%10 < prob*10.0){
                     weight = rand()%9 + 1; // 1 to 9
                     this->matrix[i][j] = weight; // fill in the matrix
                     this->matrix[j][i] = weight;

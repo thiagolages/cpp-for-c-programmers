@@ -23,6 +23,7 @@ void test01();
 void test02();
 void test03();
 void test04();
+void test05();
 
 typedef enum days{SUN, MON, TUE, WED, THU, FRI, SAT} days;
 inline days operator++ (days &d){
@@ -69,6 +70,10 @@ int main (int argc, char** argv){
         test03(); break;
     case 4: // testing stringstream
         test04(); break;
+    case 5: // testing ++i and i++
+        test05(); break;
+    // case 6: // testing ???
+    //     test06(); break;
 
     default:
         break;
@@ -125,4 +130,30 @@ void test04(){ // test stringstream
     ss << "teste04 ";
 
     cout << ss.str();
+}
+void test05(){ // test ++i and i++
+
+    const int max_iter = 5;
+
+    cout << "Doesn't make any difference if we're using it in the for loop as the third argument:" << endl;
+    cout << "For i++: " << endl;
+    for (int i = 0; i < max_iter ; i++){
+        cout << "i = " << i << endl;
+    }
+    cout << endl;
+    cout << "For ++i: " << endl;
+    for (int i = 0; i < max_iter ; ++i){
+        cout << "i = " << i << endl;
+    }
+
+    cout << "It DOES make a difference if we're using it when printing and autoincrementing:" << endl;
+    cout << "For i++: " << endl;
+    for (int i = 0; i < max_iter ; ){
+        cout << "i = " << i++ << endl;
+    }
+    cout << endl;
+    cout << "For ++i: " << endl;
+    for (int i = 0; i < max_iter ; ){
+        cout << "i = " << ++i << endl;
+    }
 }

@@ -47,7 +47,7 @@ void DijkstraAlgorithm::printShortestPath(){
     int oldIdx = endIdx;
     int newIdx = MST.at(endIdx).previousNodeIdx;
     
-    cout << "shortest path from " << startIdx << " to " << endIdx << " = " << shortestPath << endl;
+    cout << "Shortest path from " << startIdx << " to " << endIdx << " = " << shortestPath << endl;
     cout << endIdx << "<-" << newIdx;
     while(newIdx!= startIdx){
         oldIdx = newIdx;
@@ -55,7 +55,6 @@ void DijkstraAlgorithm::printShortestPath(){
         cout << "<-" << newIdx;
     }
     cout << endl;
-
 }
 
 // void DijkstraAlgorithm::setStartIdx(int startIdx){this->startIdx = startIdx;};
@@ -88,7 +87,7 @@ int DijkstraAlgorithm::compute(){
 
     // Step 1) Add the initial graph node to the closed set, and its distance to the start node (which is itself, so it's zero.)
     closedSet.push_back(GraphNode(startIdx, 0.0));
-    MST.at(startIdx)  = GraphNode(startIdx, 0.0);
+    MST.at(startIdx)  = MSTNode(startIdx, 0.0, true);
 
     // Step 2) Add to the openSet all the nodes it connects to (since this is the first node and openSet is empty)
     //  First we have to fill the openSet with the elements

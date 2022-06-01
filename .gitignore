@@ -1,6 +1,6 @@
 .vscode/
-week*/*.o
-week*/assignment*/*.o
-week*/bin
-week*/*/bin
-annotations/test
+part-a/week*/*.o
+part-a/week*/assignment*/*.o
+part-a/week*/bin
+part-a/week*/*/bin
+part-a/annotations/test
