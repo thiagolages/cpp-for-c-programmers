@@ -6,7 +6,7 @@
 
 using namespace std;
 
-#define DEBUG
+// #define DEBUG
 
 #ifdef DEBUG
 #define DEBUG_MSG(str) do { std::cout << str; } while( false )
@@ -75,7 +75,7 @@ int main (int argc, char** argv){
                 if ( !isPartOfMST[adjNodeIdx] ){ 
                     DEBUG_MSG(adjNodeIdx << " is not part of MST, adding it to tmpNodes" << endl);
                     float distToNextNode = graph.list[currNodeIdx].at(j).second;
-                    cout << "adding " << adjNodeIdx << "," << distToNextNode << "," << currNodeIdx << endl;
+                    DEBUG_MSG("adding " << adjNodeIdx << "," << distToNextNode << "," << currNodeIdx << endl);
                     tmpNodes.push_back(GraphNode(adjNodeIdx, distToNextNode, currNodeIdx));
                 }
             }
@@ -123,15 +123,19 @@ int main (int argc, char** argv){
     DEBUG_MSG("Final MST nodes: " << mst.nodes << endl);
     DEBUG_MSG("Final MST edges: " << mst.edges << endl);
 
-    DEBUG_MSG("My graph is: " << endl);
-    graph.print();
+    cout <<"My graph is: " << endl;
+    bool printMatrix = false;
+    graph.print(printMatrix);
 
-    cout << "My MST is composed of: " << endl;
+    
+
+    cout << endl;
+    cout << "My MST is composed of edges (currEdge, dist, previousEdge): " << endl;
+    cout << mst.nodes << endl;
     for (auto node : mst.nodes){
-        cout << node.index << ", weight " << node.distFromPrevNode << endl;
+        cout << node.prevIndex << " -> " << node.index << ", weight " << node.distFromPrevNode << endl;
         minDist += node.distFromPrevNode;
     }
-
     cout << "Min dist = " << minDist << endl;
 
     return 0;

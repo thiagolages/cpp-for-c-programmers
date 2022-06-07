@@ -71,26 +71,27 @@ void Graph::allocateList(){
 
 int Graph::getSize(){return this->size;}
 
-void Graph::print(){ 
+void Graph::print(bool printMatrix=false){ 
 
-    cout << endl;
-    cout << "Matrix Representation: " << endl << endl;
-    cout << "  X | ";
-    for (int i=0; i < this->size; i++){cout << i << ".0 | ";}
-    cout << endl;
-    for (int i=0; i < this->size*7; i++) cout << "_";
-    cout << endl;
-
-    for (int i = 0; i < this->size; i++){
-        cout << i << ".0";
-        for (int j = 0; j < this->size; j++){
-            cout << " | " << this->matrix[i][j];
-        }
-        cout << " | " << endl;
-        for (int k=0; k < (this->size)*7; k++) cout << "_";
+    if (printMatrix){
         cout << endl;
-    }
+        cout << "Matrix Representation: " << endl << endl;
+        cout << "  X | ";
+        for (int i=0; i < this->size; i++){cout << i << ".0 | ";}
+        cout << endl;
+        for (int i=0; i < this->size*7; i++) cout << "_";
+        cout << endl;
 
+        for (int i = 0; i < this->size; i++){
+            cout << i << ".0";
+            for (int j = 0; j < this->size; j++){
+                cout << " | " << this->matrix[i][j];
+            }
+            cout << " | " << endl;
+            for (int k=0; k < (this->size)*7; k++) cout << "_";
+            cout << endl;
+        }
+    }
     cout << endl;
     cout << "List Representation: " << endl << endl;
     for (int i = 0; i < this->list.size(); i++){

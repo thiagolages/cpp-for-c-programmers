@@ -44,7 +44,7 @@ class Graph {
         ~Graph();
 
         int getSize();
-        void print();
+        void print(bool printMatrix);
 
     private:
         void createGraph();
