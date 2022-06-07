@@ -9,3 +9,6 @@ MinimumSpanningTree: MinimumSpanningTree.cpp Graph.o
 
 Graph.o:
 	g++ -c $(GRAPH_SRC_DIR)/Graph.cpp -I$(GRAPH_INCLUDE_DIR)
+
+clean:
+	rm *.o MinimumSpanningTree
