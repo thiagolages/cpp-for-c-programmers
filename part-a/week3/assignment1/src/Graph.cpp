@@ -41,7 +41,7 @@ Graph::Graph(bool test){
     this->list.at(1).insert(list.at(1).end(), {make_pair(2, 5.0), make_pair(4, 7.0), make_pair(0, 3.0)});                       // B
     this->list.at(2).insert(list.at(2).end(), {make_pair(4, 3.0), make_pair(5, 2.0), make_pair(1, 5.0)});                       // C
     this->list.at(3).insert(list.at(3).end(), {make_pair(4, 2.0), make_pair(5, 9.0), make_pair(0, 4.0)});                       // D
-    this->list.at(4).insert(list.at(4).end(), {make_pair(1, 7.0), make_pair(2, 3.0), make_pair(4, 2.0), make_pair(5, 3.0)});    // E
+    this->list.at(4).insert(list.at(4).end(), {make_pair(1, 7.0), make_pair(2, 3.0), make_pair(3, 2.0), make_pair(5, 3.0)});    // E
     this->list.at(5).insert(list.at(5).end(), {make_pair(2, 2.0), make_pair(3, 9.0), make_pair(4, 3.0)});                       // F
     
     
